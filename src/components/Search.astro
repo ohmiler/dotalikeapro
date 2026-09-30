@@ -1,0 +1,277 @@
+---
+// ช่องค้นหาในเมนูบน: ปุ่ม + หน้าต่างค้นหา (Ctrl/⌘ + K หรือกด / เพื่อเปิด)
+---
+
+<button type="button" class="search-btn" id="search-open" aria-label="ค้นหาบทเรียน" aria-haspopup="dialog">
+	<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5"></path></svg>
+	<span class="txt">ค้นหา</span>
+	<kbd aria-hidden="true">Ctrl K</kbd>
+</button>
+
+<dialog id="search-dialog" aria-label="ค้นหาบทเรียน">
+	<form method="dialog" class="box" role="search">
+		<div class="field">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4.5 4.5"></path></svg>
+			<input
+				id="search-input"
+				type="search"
+				placeholder="ค้นหา เช่น rune, Roshan, ward, ฟาร์ม"
+				autocomplete="off"
+				spellcheck="false"
+				aria-controls="search-results"
+			/>
+			<button type="submit" class="close" aria-label="ปิด">Esc</button>
+		</div>
+		<ul id="search-results" role="listbox" aria-label="ผลการค้นหา"></ul>
+		<p id="search-status" class="status" aria-live="polite">พิมพ์เพื่อค้นหาในบทเรียนทั้งหมด</p>
+	</form>
+</dialog>
+
+<script>
+	type Item = { url: string; title: string; section: string; headings: string[]; text: string };
+	type Hit = { item: Item; score: number; snippet: string };
+
+	const dialog = document.getElementById('search-dialog') as HTMLDialogElement;
+	const input = document.getElementById('search-input') as HTMLInputElement;
+	const list = document.getElementById('search-results') as HTMLUListElement;
+	const status = document.getElementById('search-status') as HTMLParagraphElement;
+	const openBtn = document.getElementById('search-open') as HTMLButtonElement;
+
+	let index: Item[] | null = null;
+	let loading: Promise<Item[]> | null = null;
+	let active = -1;
+
+	// Mac ใช้ ⌘ แทน Ctrl
+	if (/Mac|iPhone|iPad/.test(navigator.platform)) {
+		const kbd = openBtn.querySelector('kbd');
+		if (kbd) kbd.textContent = '⌘ K';
+	}
+
+	const load = () =>
+		(loading ??= fetch('/search-index.json')
+			.then((r) => {
+				if (!r.ok) throw new Error(String(r.status));
+				return r.json() as Promise<Item[]>;
+			})
+			.then((d) => (index = d)));
+
+	const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+	/** ใส่ <mark> ให้คำที่ค้น (ข้อความถูก escape แล้วก่อน) */
+	function highlight(text: string, terms: string[]): string {
+		let out = esc(text);
+		for (const t of terms) {
+			const safe = esc(t).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+			out = out.replace(new RegExp(safe, 'gi'), (m) => `<mark>${m}</mark>`);
+		}
+		return out;
+	}
+
+	function search(q: string): Hit[] {
+		const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+		if (!terms.length || !index) return [];
+		const hits: Hit[] = [];
+		for (const item of index) {
+			const title = item.title.toLowerCase();
+			const heads = item.headings.join(' \n ').toLowerCase();
+			const text = item.text.toLowerCase();
+			let score = 0;
+			let ok = true;
+			for (const t of terms) {
+				const inTitle = title.includes(t);
+				const inHead = heads.includes(t);
+				const inText = text.includes(t);
+				if (!inTitle && !inHead && !inText) {
+					ok = false;
+					break;
+				}
+				if (inTitle) score += 20;
+				if (inHead) score += 8;
+				if (inText) score += Math.min(text.split(t).length - 1, 5);
+			}
+			if (!ok) continue;
+
+			// ตัดข้อความรอบคำแรกที่เจอในเนื้อหา
+			let snippet = '';
+			const pos = text.indexOf(terms.find((t) => text.includes(t)) ?? terms[0]);
+			if (pos >= 0) {
+				const start = Math.max(0, pos - 45);
+				snippet = (start > 0 ? '…' : '') + item.text.slice(start, start + 140) + (start + 140 < item.text.length ? '…' : '');
+			} else {
+				snippet = item.text.slice(0, 120) + '…';
+			}
+			hits.push({ item, score, snippet });
+		}
+		return hits.sort((a, b) => b.score - a.score).slice(0, 8);
+	}
+
+	function setActive(i: number) {
+		const rows = list.querySelectorAll<HTMLLIElement>('li');
+		if (!rows.length) return;
+		active = (i + rows.length) % rows.length;
+		rows.forEach((r, n) => {
+			r.setAttribute('aria-selected', String(n === active));
+			if (n === active) r.scrollIntoView({ block: 'nearest' });
+		});
+	}
+
+	function render(q: string) {
+		const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+		list.innerHTML = '';
+		active = -1;
+		if (!q.trim()) {
+			status.textContent = 'พิมพ์เพื่อค้นหาในบทเรียนทั้งหมด';
+			return;
+		}
+		const hits = search(q);
+		status.textContent = hits.length ? `พบ ${hits.length} บท` : `ไม่พบ “${q}” ลองใช้คำอื่นหรือคำที่สั้นลง`;
+		list.innerHTML = hits
+			.map(
+				(h) => `<li role="option" aria-selected="false"><a href="${h.item.url}">
+					<span class="sec">${esc(h.item.section)}</span>
+					<strong>${highlight(h.item.title, terms)}</strong>
+					<span class="snip">${highlight(h.snippet, terms)}</span>
+				</a></li>`,
+			)
+			.join('');
+		if (hits.length) setActive(0);
+	}
+
+	async function open() {
+		if (!dialog.open) dialog.showModal();
+		input.focus();
+		input.select();
+		try {
+			await load();
+			render(input.value);
+		} catch {
+			status.textContent = 'โหลดข้อมูลค้นหาไม่สำเร็จ ลองรีเฟรชหน้า';
+		}
+	}
+
+	openBtn.addEventListener('click', open);
+	input.addEventListener('input', () => render(input.value));
+	// ตัวปิด (form method=dialog) ปิดเองอยู่แล้ว; คลิกพื้นหลังเพื่อปิด
+	dialog.addEventListener('click', (e) => {
+		if (e.target === dialog) dialog.close();
+	});
+	dialog.addEventListener('close', () => openBtn.focus());
+
+	input.addEventListener('keydown', (e) => {
+		if (e.key === 'ArrowDown') {
+			e.preventDefault();
+			setActive(active + 1);
+		} else if (e.key === 'ArrowUp') {
+			e.preventDefault();
+			setActive(active - 1);
+		} else if (e.key === 'Enter') {
+			const a = list.querySelectorAll('li a')[Math.max(active, 0)] as HTMLAnchorElement | undefined;
+			if (a) {
+				e.preventDefault();
+				location.href = a.href;
+			}
+		}
+	});
+
+	addEventListener('keydown', (e) => {
+		const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target as HTMLElement)?.tagName ?? '');
+		if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+			e.preventDefault();
+			dialog.open ? dialog.close() : open();
+		} else if (e.key === '/' && !typing && !dialog.open) {
+			e.preventDefault();
+			open();
+		}
+	});
+</script>
+
+<style>
+	.search-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0.8rem;
+		border: 1px solid var(--line-strong);
+		border-radius: var(--radius);
+		background: rgba(16, 20, 22, 0.5);
+		color: var(--sl-color-gray-2);
+		font: 400 0.85rem/1 var(--font-body);
+		cursor: pointer;
+		transition: border-color 0.2s, color 0.2s;
+	}
+	.search-btn:hover { border-color: var(--ivory); color: var(--ivory); }
+	.search-btn svg, .field svg { width: 1.05rem; height: 1.05rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; flex: none; }
+	kbd {
+		padding: 0.15rem 0.4rem;
+		border: 1px solid var(--line-strong);
+		border-radius: 4px;
+		font: 500 0.68rem/1 var(--font-body);
+		color: var(--slate);
+	}
+	@media (max-width: 40rem) {
+		.search-btn .txt, .search-btn kbd { display: none; }
+		.search-btn { padding: 0.55rem; }
+	}
+
+	dialog {
+		width: min(38rem, calc(100% - 2rem));
+		max-height: min(34rem, 80vh);
+		margin: 12vh auto auto;
+		padding: 0;
+		border: 1px solid var(--line-strong);
+		border-radius: 10px;
+		background: #121819;
+		color: var(--ivory);
+		box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+		overflow: hidden; /* ให้เลื่อนเฉพาะรายการผลลัพธ์ ไม่ให้เกิดแถบเลื่อนซ้อนสองชั้น */
+	}
+	dialog::backdrop { background: rgba(8, 11, 12, 0.7); backdrop-filter: blur(4px); }
+	.box { display: flex; flex-direction: column; max-height: min(34rem, 80vh); margin: 0; }
+	.field {
+		display: flex;
+		align-items: center;
+		gap: 0.7rem;
+		padding: 0.9rem 1rem;
+		border-bottom: 1px solid var(--line);
+		color: var(--slate);
+	}
+	input {
+		flex: 1;
+		min-width: 0;
+		border: 0;
+		outline: 0;
+		background: transparent;
+		color: var(--ivory);
+		font: 400 1rem/1.4 var(--font-body);
+	}
+	input::placeholder { color: var(--slate); }
+	input::-webkit-search-cancel-button { display: none; }
+	.close {
+		padding: 0.2rem 0.45rem;
+		border: 1px solid var(--line-strong);
+		border-radius: 4px;
+		background: none;
+		color: var(--slate);
+		font: 500 0.68rem/1 var(--font-body);
+		cursor: pointer;
+	}
+	#search-results { list-style: none; margin: 0; padding: 0.4rem; overflow-y: auto; }
+	#search-results:empty { display: none; }
+	:global(#search-results li a) {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		padding: 0.65rem 0.8rem;
+		border-radius: var(--radius);
+		border-left: 2px solid transparent;
+		text-decoration: none;
+		color: inherit;
+	}
+	:global(#search-results li[aria-selected='true'] a), :global(#search-results li a:hover) { background: rgba(200, 245, 96, 0.07); border-left-color: var(--chartreuse); }
+	:global(#search-results .sec) { font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--slate); }
+	:global(#search-results li strong) { font-family: var(--font-display); font-size: 1.15rem; letter-spacing: 0.03em; font-weight: 700; }
+	:global(#search-results .snip) { font-size: 0.84rem; line-height: 1.5; color: #b4b8b3; }
+	:global(#search-results mark) { background: rgba(200, 245, 96, 0.25); color: var(--chartreuse); border-radius: 2px; padding: 0 0.1em; }
+	.status { margin: 0; padding: 0.7rem 1rem; border-top: 1px solid var(--line); font-size: 0.78rem; color: var(--slate); }
+	@media (prefers-reduced-motion: reduce) { .search-btn { transition: none; } }
+</style>

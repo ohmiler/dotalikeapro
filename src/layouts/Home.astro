@@ -1,5 +1,6 @@
 ---
 import '../styles/home.css';
+import Search from '../components/Search.astro';
 
 interface Props {
 	title: string;
@@ -32,6 +33,7 @@ const tracker = `(function(){try{var p=location.pathname;if(p==='/')return;var d
 					<a href="/#positions">Positions</a>
 					<a href="/#progress">Progress</a>
 				</nav>
+				<Search />
 				<a class="btn sm" href="/fundamentals/last-hit-deny/">Start learning</a>
 			</div>
 		</header>

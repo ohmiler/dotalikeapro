@@ -95,8 +95,12 @@ h1, h2, h3 { font-family: var(--font-display); line-height: 1; margin: 0; }
 .btn:hover { border-color: var(--ivory); }
 .btn.primary { background: var(--chartreuse); border-color: var(--chartreuse); color: #0d1300; }
 .btn.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(200, 245, 96, 0.3); }
-.btn.sm { padding: 0.5rem 1rem; }
-@media (max-width: 40rem) { .nav { display: none; } .site-header .wrap { justify-content: space-between; } }
+.btn.sm { padding: 0.5rem 1rem; white-space: nowrap; }
+@media (max-width: 40rem) {
+	.nav { display: none; }
+	.site-header .wrap { gap: 0.75rem; }
+	.brand { margin-right: auto; }
+}
 
 /* ===== Sections ===== */
 main > section { margin-block: 3.5rem; }

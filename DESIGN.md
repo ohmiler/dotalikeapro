@@ -53,7 +53,7 @@ Hero + CTA, Popular guides (การ์ดรูป), Weekly progress, Rank pro
 - **เนื้อหา** `src/content/docs/<หมวด>/<บท>.md` (schema ใน `src/content.config.ts`, ลำดับหมวดใน `src/nav.ts`)
 - **โหมดมืดล้วน** ไม่มีโหมดสว่าง/ปุ่มสลับธีม เพื่อให้ทั้งเว็บเหมือนกัน
 - **callout** ในบทเรียนใช้ blockquote (`> **หัวข้อ** ข้อความ`) — ไม่มี `:::note` แบบ Starlight
-- ยังไม่มีระบบค้นหา (ของเดิมมาจาก Starlight) — เพิ่มทีหลังได้ด้วย Pagefind
+- **ค้นหา:** `src/components/Search.astro` (ปุ่มในเมนู + หน้าต่างค้นหา Ctrl/⌘+K หรือ `/`) อ่านดัชนีจาก `/search-index.json` ที่สร้างตอน build โดย `src/pages/search-index.json.ts` ค้นแบบข้อความตรงๆ ไม่พึ่งการตัดคำ เพราะภาษาไทยไม่มีช่องว่างระหว่างคำ เพิ่มบทใหม่แล้วดัชนีอัปเดตเอง
 - ภาพประกอบอยู่ที่ `public/images/` (hero, ranks, guides)
 
 ## โลโก้
