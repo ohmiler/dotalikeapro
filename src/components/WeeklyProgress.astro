@@ -1,0 +1,105 @@
+---
+---
+
+<section>
+	<h2 class="label">Weekly progress</h2>
+	<div class="panel">
+		<div class="chart" id="wk" role="img" aria-label="จำนวนบทที่อ่านในแต่ละวันของสัปดาห์นี้">
+			{
+				['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
+					<div class="col" data-day={i}>
+						<div class="bar"></div>
+						<span>{d}</span>
+					</div>
+				))
+			}
+		</div>
+		<div class="stats">
+			<div class="stat">
+				<strong id="wk-total">0</strong>
+				<span>Guides read this week</span>
+			</div>
+			<div class="stat">
+				<strong id="wk-streak">0</strong>
+				<span>Day streak</span>
+			</div>
+		</div>
+	</div>
+</section>
+
+<script>
+	// อ่านข้อมูลที่ tracker ใน <head> บันทึกไว้ (localStorage: dlp-visits = { 'YYYY-MM-DD': [paths] })
+	const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+	let visits: Record<string, string[]> = {};
+	try {
+		visits = JSON.parse(localStorage.getItem('dlp-visits') ?? '{}');
+	} catch {}
+
+	const now = new Date();
+	const monday = new Date(now);
+	monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+
+	const counts = Array.from({ length: 7 }, (_, i) => {
+		const d = new Date(monday);
+		d.setDate(monday.getDate() + i);
+		return visits[iso(d)]?.length ?? 0;
+	});
+	const max = Math.max(...counts, 1);
+	const today = (now.getDay() + 6) % 7;
+
+	document.querySelectorAll<HTMLElement>('#wk .col').forEach((col) => {
+		const i = Number(col.dataset.day);
+		const bar = col.querySelector<HTMLElement>('.bar')!;
+		bar.style.height = `${Math.max((counts[i] / max) * 100, 6)}%`;
+		bar.classList.toggle('today', i === today);
+		bar.title = `${counts[i]} บท`;
+	});
+
+	const weekPaths = new Set<string>();
+	counts.forEach((_, i) => {
+		const d = new Date(monday);
+		d.setDate(monday.getDate() + i);
+		(visits[iso(d)] ?? []).forEach((p) => weekPaths.add(p));
+	});
+	document.getElementById('wk-total')!.textContent = String(weekPaths.size);
+
+	let streak = 0;
+	for (let i = 0; i < 365; i++) {
+		const d = new Date(now);
+		d.setDate(now.getDate() - i);
+		if ((visits[iso(d)]?.length ?? 0) > 0) streak++;
+		else if (i > 0) break;
+	}
+	document.getElementById('wk-streak')!.textContent = String(streak);
+</script>
+
+<style>
+	section { margin-top: var(--section-gap); }
+	.label {
+		font-family: var(--sl-font);
+		font-size: 0.75rem;
+		letter-spacing: 0.22em;
+		color: var(--slate);
+		border: none !important;
+		margin: 0 0 1rem;
+	}
+	.label::before { display: none !important; }
+	.panel {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr;
+		gap: 1.5rem;
+		padding: 1.4rem;
+		border: 1px solid var(--sl-color-hairline-light);
+		border-radius: 8px;
+		background: var(--sl-color-gray-6);
+	}
+	.chart { display: flex; align-items: flex-end; gap: 0.6rem; height: 8rem; }
+	.col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 0.4rem; }
+	.bar { width: 100%; max-width: 1.6rem; min-height: 6%; background: var(--sl-color-gray-4); border-radius: 2px; }
+	.bar.today { background: var(--chartreuse); }
+	.col span { font-size: 0.7rem; color: var(--slate); }
+	.stats { display: flex; flex-direction: column; justify-content: center; gap: 1.2rem; }
+	.stat strong { display: block; font-family: var(--font-display); font-size: 2.4rem; line-height: 1; color: var(--ivory); }
+	.stat span { font-size: 0.8rem; color: var(--slate); }
+	@media (max-width: 40rem) { .panel { grid-template-columns: 1fr; } }
+</style>

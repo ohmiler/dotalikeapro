@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap');
+
+/* Palette — ดู DESIGN.md */
+:root {
+	--graphite: #101416;
+	--ivory: #f1eee7;
+	--chartreuse: #c8f560;
+	--slate: #87928f;
+	--forest: #2a332f;
+
+	--font-body: 'Inter', 'IBM Plex Sans Thai', system-ui, sans-serif;
+	--font-display: 'Barlow Condensed', 'IBM Plex Sans Thai', sans-serif;
+	--radius: 6px;
+	--section-gap: clamp(3rem, 6vw, 4.5rem); /* ระยะห่างระหว่างบล็อกหลักของหน้า */
+	--line: rgba(135, 146, 143, 0.2);
+	--line-strong: rgba(135, 146, 143, 0.34);
+	--surface: #151b19;
+
+	/* ให้คอมโพเนนต์ที่ใช้ตัวแปรของ Starlight ทำงานได้ในหน้านี้ */
+	--sl-font: var(--font-body);
+	--sl-color-hairline: var(--line);
+	--sl-color-hairline-light: var(--line-strong);
+	--sl-color-gray-1: #dcd9d2;
+	--sl-color-gray-2: #b4b8b3;
+	--sl-color-gray-3: var(--slate);
+	--sl-color-gray-4: #4b5651;
+	--sl-color-gray-6: var(--surface);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+	margin: 0;
+	font-family: var(--font-body);
+	color: var(--ivory);
+	line-height: 1.6;
+	background:
+		linear-gradient(rgba(135, 146, 143, 0.04) 1px, transparent 1px) 0 0 / 56px 56px,
+		linear-gradient(90deg, rgba(135, 146, 143, 0.04) 1px, transparent 1px) 0 0 / 56px 56px,
+		var(--graphite);
+}
+a { color: inherit; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1; margin: 0; }
+:focus-visible { outline: 2px solid var(--chartreuse); outline-offset: 3px; }
+
+.wrap { width: min(72rem, 100% - 2rem); margin-inline: auto; }
+
+/* label เล็กแบบตัวอย่าง */
+.label {
+	display: flex;
+	align-items: center;
+	gap: 0.7rem;
+	margin: 0 0 1rem;
+	font-family: var(--font-body);
+	font-size: 0.72rem;
+	font-weight: 500;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: var(--slate);
+}
+.label::after { content: ''; width: 2rem; height: 2px; background: var(--chartreuse); }
+
+/* ===== Header ===== */
+.site-header {
+	position: fixed;
+	inset: 0 0 auto 0;
+	z-index: 20;
+	border-bottom: 1px solid transparent;
+	transition: background 0.25s, border-color 0.25s, backdrop-filter 0.25s;
+}
+/* โปร่งใสทับภาพ hero ตอนอยู่บนสุด แล้วเปลี่ยนเป็นกระจกเบลอเมื่อเลื่อนลง */
+.site-header.scrolled {
+	backdrop-filter: blur(14px);
+	background: rgba(16, 20, 22, 0.82);
+	border-bottom-color: var(--line);
+}
+.site-header .wrap { display: flex; align-items: center; gap: 2rem; height: 4rem; }
+.brand { display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; }
+.brand .mark { height: 1.6rem; width: auto; display: block; }
+.nav { display: flex; gap: 1.6rem; margin-right: auto; font-size: 0.88rem; }
+.nav a { text-decoration: none; color: var(--sl-color-gray-2); transition: color 0.2s; }
+.nav a:hover { color: var(--chartreuse); }
+.btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 0.7rem 1.3rem;
+	border-radius: var(--radius);
+	font-weight: 600;
+	font-size: 0.9rem;
+	text-decoration: none;
+	border: 1px solid var(--line-strong);
+	transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.btn:hover { border-color: var(--ivory); }
+.btn.primary { background: var(--chartreuse); border-color: var(--chartreuse); color: #0d1300; }
+.btn.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(200, 245, 96, 0.3); }
+.btn.sm { padding: 0.5rem 1rem; }
+@media (max-width: 40rem) { .nav { display: none; } .site-header .wrap { justify-content: space-between; } }
+
+/* ===== Sections ===== */
+main > section { margin-block: 3.5rem; }
+.section-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.section-head .label { margin: 0; }
+
+/* ===== Footer strip ===== */
+.foot {
+	margin-top: 5rem;
+	padding: 2rem 0 3rem;
+	border-top: 1px solid var(--line);
+	font-size: 0.72rem;
+	letter-spacing: 0.3em;
+	text-transform: uppercase;
+	color: var(--slate);
+}
+.foot .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; }
+.foot span:not(:last-child)::after { content: '/'; margin-left: 1.4rem; color: var(--chartreuse); }
+
+@media (prefers-reduced-motion: reduce) {
+	html { scroll-behavior: auto; }
+	.btn, .nav a { transition: none; }
+	.btn.primary:hover { transform: none; }
+}

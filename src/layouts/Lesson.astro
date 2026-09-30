@@ -1,0 +1,95 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Base from './Home.astro';
+import SideNav from '../components/SideNav.astro';
+import { getNav, sections } from '../nav';
+import { CURRENT_PATCH } from '../patch';
+import '../styles/prose.css';
+
+interface Props {
+	entry: CollectionEntry<'docs'>;
+	headings: { depth: number; slug: string; text: string }[];
+}
+const { entry, headings } = Astro.props;
+const { title, description, evergreen, patch } = entry.data;
+
+const section = sections.find((s) => entry.id.startsWith(`${s.dir}/`));
+const flat = (await getNav()).flatMap((s) => s.items);
+const i = flat.findIndex((e) => e.id === entry.id);
+const prev = flat[i - 1];
+const next = flat[i + 1];
+const toc = headings.filter((h) => h.depth === 2);
+const outdated = !evergreen && patch !== CURRENT_PATCH;
+---
+
+<Base title={`${title} | dotalikeapro`} description={description ?? title} solid>
+	<div class="wrap lesson">
+		<aside class="side">
+			<SideNav current={entry.id} />
+		</aside>
+
+		<article>
+			<details class="side-mobile">
+				<summary>บทเรียนทั้งหมด</summary>
+				<SideNav current={entry.id} />
+			</details>
+
+			<header class="lesson-head">
+				<p class="label">{section?.label}</p>
+				<h1>{title}</h1>
+				{
+					!evergreen && (
+						<p class:list={['patch-badge', { outdated }]}>
+							{outdated
+								? `เนื้อหานี้เขียนตาม patch ${patch ?? 'ไม่ระบุ'} — อาจล้าสมัย (ปัจจุบัน ${CURRENT_PATCH})`
+								: `อัปเดตตาม patch ${patch}`}
+						</p>
+					)
+				}
+				{description && <p class="desc">{description}</p>}
+			</header>
+
+			<div class="prose">
+				<slot />
+			</div>
+
+			<nav class="pager" aria-label="บทก่อนหน้า/ถัดไป">
+				{
+					prev ? (
+						<a class="prev" href={`/${prev.id}/`}>
+							<span>← ก่อนหน้า</span>
+							<strong>{prev.data.title}</strong>
+						</a>
+					) : (
+						<span />
+					)
+				}
+				{
+					next && (
+						<a class="next" href={`/${next.id}/`}>
+							<span>ถัดไป →</span>
+							<strong>{next.data.title}</strong>
+						</a>
+					)
+				}
+			</nav>
+		</article>
+
+		<aside class="toc">
+			{
+				toc.length > 1 && (
+					<>
+						<p class="label">On this page</p>
+						<ul>
+							{toc.map((h) => (
+								<li>
+									<a href={`#${h.slug}`}>{h.text}</a>
+								</li>
+							))}
+						</ul>
+					</>
+				)
+			}
+		</aside>
+	</div>
+</Base>

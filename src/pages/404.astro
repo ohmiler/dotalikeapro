@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Home.astro';
+---
+
+<Base title="ไม่พบหน้านี้ | dotalikeapro" description="ไม่พบหน้าที่ค้นหา" solid>
+	<div class="wrap nf">
+		<p class="label">404</p>
+		<h1>Lost in the fog.</h1>
+		<p>ไม่พบหน้าที่คุณต้องการ อาจถูกย้ายหรือยังไม่ได้เขียน</p>
+		<a class="btn primary" href="/">กลับหน้าแรก <span aria-hidden="true">→</span></a>
+	</div>
+</Base>
+
+<style>
+	.nf { padding-block: 9rem 6rem; }
+	h1 { font-size: clamp(3rem, 9vw, 5.5rem); font-weight: 800; margin: 0.5rem 0 1rem; }
+	p { color: var(--sl-color-gray-2); margin: 0 0 1.6rem; }
+	.label { color: var(--slate); }
+</style>

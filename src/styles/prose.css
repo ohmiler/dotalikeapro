@@ -1,0 +1,178 @@
+/* ===== หน้าบทเรียน ===== */
+.lesson {
+	display: grid;
+	grid-template-columns: 15rem minmax(0, 1fr) 12rem;
+	gap: 3rem;
+	padding-top: 6.5rem;
+	align-items: start;
+}
+.lesson .side,
+.lesson .toc {
+	position: sticky;
+	top: 5.5rem;
+	max-height: calc(100vh - 7rem);
+	overflow-y: auto;
+	scrollbar-width: thin;
+}
+.lesson .side { padding-right: 1rem; border-right: 1px solid var(--line); }
+.lesson article { min-width: 0; max-width: 46rem; }
+
+.side-mobile { display: none; }
+@media (max-width: 80rem) {
+	.lesson { grid-template-columns: 15rem minmax(0, 1fr); }
+	.lesson .toc { display: none; }
+}
+@media (max-width: 52rem) {
+	.lesson { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 5.5rem; }
+	.lesson .side { display: none; }
+	.side-mobile {
+		display: block;
+		margin-bottom: 1.5rem;
+		border: 1px solid var(--line-strong);
+		border-radius: var(--radius);
+		background: var(--surface);
+	}
+	.side-mobile summary {
+		padding: 0.8rem 1rem;
+		cursor: pointer;
+		font-size: 0.72rem;
+		font-weight: 500;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--slate);
+	}
+	.side-mobile[open] summary { border-bottom: 1px solid var(--line); }
+	.side-mobile .side-nav { padding: 1rem; }
+}
+
+/* ส่วนหัวบทเรียน */
+.lesson-head { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--line); }
+.lesson-head h1 {
+	font-size: clamp(2.2rem, 5vw, 3.4rem);
+	font-weight: 800;
+	line-height: 1.05;
+	text-transform: uppercase;
+	letter-spacing: 0.01em;
+}
+.lesson-head .desc { margin: 1rem 0 0; color: var(--sl-color-gray-2); }
+
+.patch-badge {
+	display: inline-block;
+	margin: 1rem 0 0;
+	padding: 0.35rem 0.8rem;
+	border: 1px solid rgba(200, 245, 96, 0.4);
+	border-radius: var(--radius);
+	background: rgba(200, 245, 96, 0.08);
+	color: var(--chartreuse);
+	font-size: 0.74rem;
+	letter-spacing: 0.06em;
+}
+.patch-badge.outdated {
+	border-color: rgba(255, 176, 64, 0.5);
+	background: rgba(255, 176, 64, 0.08);
+	color: #ffb040;
+}
+
+/* เนื้อหา */
+.prose { font-size: 1rem; line-height: 1.85; color: #d8d6cf; }
+.prose > * + * { margin-top: 1.1rem; }
+.prose h2, .prose h3 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.01em; color: var(--ivory); scroll-margin-top: 6rem; }
+.prose h2 {
+	margin-top: 2.6rem;
+	padding-bottom: 0.4rem;
+	border-bottom: 1px solid var(--line);
+	font-size: 1.9rem;
+	font-weight: 700;
+}
+.prose h2::before {
+	content: '';
+	display: inline-block;
+	width: 1.4rem;
+	height: 3px;
+	margin-right: 0.6rem;
+	vertical-align: middle;
+	background: var(--chartreuse);
+}
+.prose h3 { margin-top: 2rem; font-size: 1.4rem; font-weight: 700; }
+.prose a { color: var(--chartreuse); text-decoration: underline; text-decoration-color: rgba(200, 245, 96, 0.4); text-underline-offset: 0.2em; }
+.prose a:hover { text-decoration-color: currentColor; }
+.prose strong { color: var(--ivory); }
+.prose ul, .prose ol { padding-left: 1.4rem; }
+.prose li + li { margin-top: 0.35rem; }
+.prose ul > li::marker { color: var(--chartreuse); }
+.prose ol > li::marker { color: var(--slate); font-weight: 600; }
+.prose hr { border: 0; border-top: 1px solid var(--line); margin-block: 2rem; }
+
+.prose code {
+	padding: 0.1em 0.4em;
+	border: 1px solid var(--line);
+	border-radius: 4px;
+	background: var(--surface);
+	color: var(--chartreuse);
+	font-size: 0.9em;
+}
+.prose pre {
+	padding: 1rem 1.2rem;
+	overflow-x: auto;
+	border: 1px solid var(--line-strong);
+	border-radius: var(--radius);
+	background: #0d1113 !important;
+	line-height: 1.6;
+}
+.prose pre code { padding: 0; border: 0; background: none; color: var(--ivory); }
+
+.prose table { display: block; overflow-x: auto; width: 100%; border-collapse: collapse; border: 1px solid var(--line-strong); border-radius: var(--radius); }
+.prose th, .prose td { padding: 0.6rem 0.9rem; text-align: left; border-bottom: 1px solid var(--line); }
+.prose th { background: var(--forest); color: var(--sl-color-gray-2); font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.prose tr:last-child td { border-bottom: 0; }
+
+/* blockquote = callout */
+.prose blockquote {
+	margin-inline: 0;
+	padding: 0.9rem 1.1rem;
+	border: 1px solid var(--line-strong);
+	border-left: 3px solid var(--chartreuse);
+	border-radius: var(--radius);
+	background: var(--surface);
+}
+.prose blockquote > * + * { margin-top: 0.5rem; }
+.prose blockquote p { margin: 0; }
+
+.prose img { max-width: 100%; height: auto; border-radius: var(--radius); }
+
+/* บทก่อนหน้า/ถัดไป */
+.pager { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 3.5rem; }
+.pager a {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	padding: 1rem 1.2rem;
+	border: 1px solid var(--line-strong);
+	border-radius: 8px;
+	background: var(--surface);
+	text-decoration: none;
+	transition: border-color 0.25s, transform 0.25s;
+}
+.pager a:hover { border-color: var(--chartreuse); transform: translateY(-2px); }
+.pager span { font-size: 0.78rem; color: var(--slate); }
+.pager strong { font-family: var(--font-display); font-size: 1.25rem; letter-spacing: 0.04em; }
+.pager .next { grid-column: 2; text-align: right; }
+@media (max-width: 40rem) { .pager { grid-template-columns: 1fr; } .pager .next { grid-column: auto; } }
+
+/* On this page */
+.toc ul { list-style: none; margin: 0; padding: 0; }
+.toc a {
+	display: block;
+	padding: 0.25rem 0 0.25rem 0.8rem;
+	border-left: 1px solid var(--line-strong);
+	font-size: 0.82rem;
+	line-height: 1.4;
+	color: var(--slate);
+	text-decoration: none;
+}
+.toc a:hover { color: var(--chartreuse); border-left-color: var(--chartreuse); }
+
+@media (prefers-reduced-motion: reduce) {
+	.pager a { transition: none; }
+	.pager a:hover { transform: none; }
+}

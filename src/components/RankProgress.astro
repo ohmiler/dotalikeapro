@@ -1,0 +1,107 @@
+---
+const ranks = ['Herald', 'Guardian', 'Crusader', 'Archon', 'Legend', 'Ancient', 'Divine', 'Immortal'];
+---
+
+<section>
+	<h2 class="label">Rank progression</h2>
+	<p class="hint">เลือกแรงค์ปัจจุบันของคุณ (จำไว้ในเบราว์เซอร์นี้)</p>
+	<ol id="ranks">
+		{
+			ranks.map((r, i) => (
+				<li>
+					<button type="button" data-rank={i} aria-pressed="false">
+						<img src={`/images/ranks/${r.toLowerCase()}.webp`} alt="" width="200" height="200" decoding="async" />
+						<span class="name">{r}</span>
+					</button>
+				</li>
+			))
+		}
+	</ol>
+</section>
+
+<script>
+	const KEY = 'dlp-rank';
+	const buttons = document.querySelectorAll<HTMLButtonElement>('#ranks button');
+	const paint = (idx: number) =>
+		buttons.forEach((b) => {
+			const i = Number(b.dataset.rank);
+			b.setAttribute('aria-pressed', String(i === idx));
+			b.classList.toggle('done', i < idx);
+		});
+	let saved = -1;
+	try {
+		saved = Number(localStorage.getItem(KEY) ?? -1);
+	} catch {}
+	paint(saved);
+	buttons.forEach((b) =>
+		b.addEventListener('click', () => {
+			const i = Number(b.dataset.rank);
+			paint(i);
+			try {
+				localStorage.setItem(KEY, String(i));
+			} catch {}
+		}),
+	);
+</script>
+
+<style>
+	section { margin-top: var(--section-gap); }
+	.label {
+		font-family: var(--sl-font);
+		font-size: 0.75rem;
+		letter-spacing: 0.22em;
+		color: var(--slate);
+		border: none !important;
+		margin: 0 0 0.3rem;
+	}
+	.label::before { display: none !important; }
+	.hint { font-size: 0.85rem; color: var(--slate); margin: 0 0 1rem; }
+	ol {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+		gap: 0.5rem;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	button {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.8rem 0.4rem;
+		background: transparent;
+		border: 1px solid var(--sl-color-hairline);
+		border-radius: 8px;
+		color: var(--slate);
+		cursor: pointer;
+		transition: border-color 0.2s, color 0.2s;
+	}
+	button:hover { border-color: var(--sl-color-hairline-light); color: var(--sl-color-gray-1); }
+	img {
+		width: 100%;
+		height: 4.8rem;
+		object-fit: contain;
+		/* แรงค์ที่ยังไม่ถึง: จางและไร้สี */
+		filter: grayscale(1) brightness(0.7);
+		opacity: 0.55;
+		transition: filter 0.25s, opacity 0.25s, transform 0.25s;
+	}
+	button:hover img { opacity: 0.85; }
+	.name { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; }
+	/* แรงค์ที่ผ่านมาแล้ว: มีสีแต่หรี่ลง */
+	button.done { color: var(--sl-color-gray-2); }
+	button.done img { filter: saturate(0.8) brightness(0.8); opacity: 0.85; }
+	/* แรงค์ปัจจุบัน: สีเต็ม + เรืองแสง chartreuse */
+	button[aria-pressed='true'] { border-color: var(--chartreuse); color: var(--chartreuse); background: rgba(200, 245, 96, 0.05); }
+	button[aria-pressed='true'] img {
+		filter: drop-shadow(0 0 10px rgba(200, 245, 96, 0.45));
+		opacity: 1;
+		transform: scale(1.06);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		button, img { transition: none; }
+		button[aria-pressed='true'] img { transform: none; }
+	}
+</style>

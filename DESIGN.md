@@ -1,0 +1,80 @@
+# Design Direction — dotalikeapro
+
+อ้างอิงจากภาพ "Visual Brand Direction / 01" ที่เจ้าของโปรเจกต์เลือก ทุกการปรับ UI ต้องยึดไฟล์นี้
+
+**Tone:** Tactical / Focused / Competitive — เหมือนแพลตฟอร์มโค้ชมืออาชีพ ไม่ใช่เว็บแฟนเกมสีฉูดฉาด
+**Tagline:** Play smarter. Climb higher. — Strategy. Practice. Progress.
+
+## สี (Palette)
+
+| ชื่อ | Hex | ใช้กับ |
+| --- | --- | --- |
+| Graphite | `#101416` | พื้นหลังหลัก |
+| Ivory | `#F1EEE7` | ตัวอักษรหลัก, พื้นหลังโหมดสว่าง |
+| Chartreuse | `#C8F560` | สีเน้นเดียว: ปุ่มหลัก, ลิงก์, สถานะ active, ค่าที่ดีขึ้น |
+| Slate | `#87928F` | ตัวอักษรรอง, กราฟ/ข้อมูลรอง |
+| Forest | `#2A332F` | พื้นผิวการ์ด, เส้นขอบ, พื้นหลังรอง |
+
+กฎ: chartreuse ใช้เท่าที่จำเป็น (จุดเดียวต่อหน้าจอ เช่น ปุ่ม CTA) ห้ามใช้เป็นพื้นหลังผืนใหญ่
+
+## ตัวอักษร
+
+- **Display:** Condensed grotesk ตัวหนา ตัวพิมพ์ใหญ่ (Barlow Condensed) — พาดหัวใหญ่ สั้น กระชับ
+- **Body:** Clean sans (Inter + IBM Plex Sans Thai สำหรับภาษาไทย)
+- **Label:** ตัวพิมพ์ใหญ่ เว้นตัวอักษรกว้าง ขนาดเล็ก (เช่น `POPULAR GUIDES`)
+
+## องค์ประกอบ UI
+
+- ปุ่มหลัก: พื้น chartreuse ตัวอักษรดำ มีลูกศร / ปุ่มรอง: ขอบบางใส
+- การ์ด: รูปเต็มใบ มี gradient ดำทับด้านล่าง หัวข้อตัวพิมพ์ใหญ่ ลูกศรมุมขวาล่าง
+- เส้นแบ่งบาง (hairline) สีเขียวเข้ม, มุมโค้งน้อย (ไม่เกิน ~8px)
+- ป้ายหมวดเป็นตัวพิมพ์ใหญ่ เว้นตัวอักษร นำหน้าด้วยเส้นสั้นสี chartreuse
+- Weekly progress: กราฟแท่งสีเทา, วันปัจจุบันเป็น chartreuse, ตัวเลขสถิติใหญ่ + ไอคอน
+- Rank progression: Herald → Guardian → Crusader → Archon → Legend → Ancient → Divine (จุดปัจจุบัน chartreuse)
+- ตัวเลือกตำแหน่งแบบ dropdown (Pos 1–5) มีไอคอนนำหน้า
+- ลวดลายพื้นหลัง: เส้นตาราง/พิกัดแผนที่บางๆ ความโปร่งใสต่ำ
+
+## ภาพ/อารมณ์
+
+- ภาพฮีโร่โทนมืดสไตล์ปกหนังสือ เน้นเขียว-ดำ มีหมอก ไม่ใช้สีอื่นแข่ง
+- ภาพต้องมี gradient ทับให้ข้อความอ่านออกเสมอ
+- **เว็บนี้เป็นแพลตฟอร์มไม่เป็นทางการ** อย่าเอาโลโก้/ภาพ/ชื่อฮีโร่ที่ลิขสิทธิ์ Valve มาใช้เป็นแบรนด์ของเว็บ ภาพฮีโร่ในตัวอย่างเป็นภาพสร้างจาก AI ใช้เป็นแนวทางเท่านั้น
+
+## ฟีเจอร์ที่ภาพแสดงไว้ (ยังไม่ได้ทำ)
+
+Hero + CTA, Popular guides (การ์ดรูป), Weekly progress, Rank progression, Coaching, Sign in, Mobile layout
+
+> Weekly progress / Sign in ต้องมี backend ยังไม่อยู่ใน scope ตอนนี้ (เก็บ progress ใน localStorage ได้ก่อน)
+
+## โครงสร้างหน้าเว็บ (ไม่ใช้ Starlight แล้ว — Astro ล้วน)
+- **เลย์เอาต์หลัก** `src/layouts/Home.astro` — head, เมนู, ท้ายหน้า, ตัวนับบทที่อ่าน (prop `solid` = เมนูทึบ สำหรับหน้าที่ไม่มี hero)
+- **หน้าแรก** `src/pages/index.astro` + `src/components/*` + `src/styles/home.css` (สี, ฟอนต์, ปุ่ม, การ์ด)
+- **หน้าบทเรียน** `src/pages/[...slug].astro` → `src/layouts/Lesson.astro` + `src/components/SideNav.astro` + `src/styles/prose.css`
+- **เนื้อหา** `src/content/docs/<หมวด>/<บท>.md` (schema ใน `src/content.config.ts`, ลำดับหมวดใน `src/nav.ts`)
+- **โหมดมืดล้วน** ไม่มีโหมดสว่าง/ปุ่มสลับธีม เพื่อให้ทั้งเว็บเหมือนกัน
+- **callout** ในบทเรียนใช้ blockquote (`> **หัวข้อ** ข้อความ`) — ไม่มี `:::note` แบบ Starlight
+- ยังไม่มีระบบค้นหา (ของเดิมมาจาก Starlight) — เพิ่มทีหลังได้ด้วย Pagefind
+- ภาพประกอบอยู่ที่ `public/images/` (hero, ranks, guides)
+
+## โลโก้
+- เครื่องหมาย "DL" หกเหลี่ยมแยกสองซีก (D + L) วาดเป็น SVG จากโลโก้ที่เจ้าของโปรเจกต์ให้มา (เทียบกับต้นฉบับแล้วตรง ~99%)
+- `public/logo-mark.svg` — สี chartreuse ใช้บนพื้นมืด (ค่าเริ่มต้น)
+- `public/logo-mark-dark.svg` — สี graphite ใช้บนพื้นสว่าง (โหมดสว่างของบทเรียนใช้ไฟล์นี้)
+- `public/favicon.svg` — เครื่องหมายบนพื้นสี่เหลี่ยมมุมมน graphite
+- ข้อความ "dotalikeapro" ตัวพิมพ์เล็ก ใช้ฟอนต์ display (Barlow Condensed) วางถัดจากเครื่องหมาย
+
+## ระยะห่าง (spacing)
+- ขอบซ้ายขวาของเนื้อหา: `.wrap` = กว้างสูงสุด 72rem เหลือขอบ 1rem (16px) ทุกจอ
+- ระยะระหว่างบล็อกหลักของหน้าแรก: `--section-gap` (`clamp(3rem, 6vw, 4.5rem)`) ใช้ตัวแปรเดียว ห้ามใส่ margin ตัวเลขเอง
+- หัวข้อบล็อก → เนื้อหา: 1rem · การ์ดในกริด: 1rem
+- หน้าบทเรียน: ย่อหน้า 1.1rem · ก่อนหัวข้อ h2 2.6rem · ท้ายส่วนหัว → เนื้อหา 2rem · เนื้อหา → ปุ่มก่อนหน้า/ถัดไป 3.5rem
+- ท้ายหน้า (`.foot`) ห่างจากเนื้อหา 5rem
+- เมนูบนเป็น `position: fixed` สูง 4rem → เนื้อหาหน้าบทเรียนเว้นบน 6.5rem (มือถือ 5.5rem)
+
+## การเขียนบทเรียน (`src/content/docs/<หมวด>/<บท>.md`)
+- frontmatter: `title`, `description`, `order`, `evergreen`, และถ้าขึ้นกับ patch ใส่ `patch` + `lastReviewed`
+- โครง: ทำไมสำคัญ → หลักการ → ตาราง/เงื่อนไข → ข้อผิดพลาดที่เจอบ่อย → **TL;DR**
+- callout ใช้ blockquote: `> **หัวข้อ** ข้อความ`
+- **ตัวเลขที่ขึ้นกับ patch** ต้องยืนยันจากแพตช์โน้ตทางการเท่านั้น (ดึงได้จาก `https://www.dota2.com/datafeed/patchnotes?version=<เลขเวอร์ชัน>&language=english`) ถ้ายืนยันไม่ได้ให้ระบุ "ควรเช็กในเกม" ห้ามเดา
+- ตัวเลขเชิงกลยุทธ์ (เช่น last hit เป้าหมาย) ต้องบอกว่าเป็นค่าประมาณ
+- ลิงก์ภายในใช้รูปแบบ `/หมวด/บท/` แล้วตรวจลิงก์เสียหลังเพิ่มบท

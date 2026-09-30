@@ -1,0 +1,134 @@
+---
+// pos: 'all' = พื้นฐานทุกตำแหน่ง, 1-5 = เฉพาะตำแหน่ง
+const guides = [
+	{ title: 'Laning', desc: 'Last hit, deny และคุมเลนให้ได้เปรียบ', href: '/fundamentals/creep-equilibrium/', pos: 'all', img: 'laning', kind: 'hero' },
+	{ title: 'Map control', desc: 'อ่านมินิแมพ ใช้ timing และวิสัยทัศน์', href: '/fundamentals/map-awareness/', pos: 'all', img: 'map-control', kind: 'icon' },
+	{ title: 'Timings', desc: 'Rune, Roshan, Tormentor ตาม patch ล่าสุด', href: '/fundamentals/timings/', pos: 'all', img: 'timings', kind: 'icon' },
+	{ title: 'Farm pattern', desc: 'ฟาร์มให้ถึง power spike เร็วที่สุด', href: '/pos1-carry/farm-pattern/', pos: '1', img: 'farm-pattern', kind: 'hero' },
+	{ title: 'Rune control', desc: 'คุม rune แล้วเปลี่ยนเป็น tempo', href: '/pos2-mid/rune-control/', pos: '2', img: 'rune-control', kind: 'hero' },
+	{ title: 'Offlane', desc: 'ยืนเลนยากและสร้างพื้นที่ให้ทีม', href: '/pos3-offlane/laning/', pos: '3', img: 'offlane', kind: 'hero' },
+	{ title: 'Rotation', desc: 'ไปช่วยเลนอื่นและป่วนเลนศัตรู', href: '/pos4-soft/rotation/', pos: '4', img: 'rotation', kind: 'hero' },
+	{ title: 'Warding', desc: 'ward และ deward ที่คุ้มค่า', href: '/pos5-hard/warding/', pos: '5', img: 'warding', kind: 'icon' },
+];
+const positions = [
+	['all', 'All positions'],
+	['1', 'Pos 1 · Carry'],
+	['2', 'Pos 2 · Mid'],
+	['3', 'Pos 3 · Offlane'],
+	['4', 'Pos 4 · Soft'],
+	['5', 'Pos 5 · Hard'],
+];
+---
+
+<section id="positions">
+	<div class="section-head">
+		<h2 class="label">Popular guides</h2>
+		<label class="pick">
+			<span class="sr">เลือกตำแหน่ง</span>
+			<select id="pos-filter">
+				{positions.map(([v, l]) => <option value={v}>{l}</option>)}
+			</select>
+		</label>
+	</div>
+	<div class="grid" id="guide-grid">
+		{
+			guides.map((g) => (
+				<a class={`guide ${g.kind}`} href={g.href} data-pos={g.pos}>
+					<img class="pic" src={`/images/guides/${g.img}.png`} alt="" width={g.kind === 'hero' ? 256 : 88} height={g.kind === 'hero' ? 144 : 64} decoding="async" />
+					<div class="text">
+						<h3>{g.title}</h3>
+						<p>{g.desc}</p>
+					</div>
+					<span class="arrow" aria-hidden="true">→</span>
+				</a>
+			))
+		}
+	</div>
+</section>
+
+<script>
+	const sel = document.getElementById('pos-filter') as HTMLSelectElement;
+	const cards = document.querySelectorAll<HTMLElement>('#guide-grid .guide');
+	const apply = () =>
+		cards.forEach((c) => {
+			const p = c.dataset.pos;
+			// พื้นฐาน (all) แสดงเสมอ, บทเฉพาะตำแหน่งแสดงเมื่อเลือกตรงกัน
+			c.hidden = !(sel.value === 'all' || p === 'all' || p === sel.value);
+		});
+	sel.addEventListener('change', apply);
+	apply();
+</script>
+
+<style>
+	#positions { margin-top: var(--section-gap); }
+	.pick select {
+		appearance: none;
+		padding: 0.55rem 2.2rem 0.55rem 0.9rem;
+		font: 600 0.72rem/1 var(--font-body);
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--ivory);
+		background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23c8f560' stroke-width='2'%3E%3Cpath d='M1 1l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 0.8rem center;
+		border: 1px solid var(--line-strong);
+		border-radius: var(--radius);
+		cursor: pointer;
+	}
+	.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+	.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 1rem; }
+	.guide {
+		position: relative;
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 1rem;
+		min-height: 12rem;
+		padding: 1.2rem;
+		overflow: hidden;
+		border: 1px solid var(--line-strong);
+		border-radius: 8px;
+		text-decoration: none;
+		background: var(--bg);
+		transition: transform 0.25s, border-color 0.25s;
+	}
+	.guide[hidden] { display: none; }
+	.guide::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, transparent 15%, rgba(8, 11, 12, 0.94));
+	}
+	.guide.icon { --bg: #121a15; }
+	.guide.hero { --bg: #121a15; }
+	.pic { position: absolute; }
+	/* ภาพฮีโร่: เต็มใบ ชิดขวา หรี่ลงเล็กน้อย */
+	.hero .pic {
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: 60% 25%;
+		filter: saturate(0.9) brightness(0.85);
+		transition: transform 0.4s;
+	}
+	.hero:hover .pic { transform: scale(1.05); }
+	/* ไอเท็ม: ขยายเต็มการ์ดเหมือนภาพฮีโร่ (ต้นฉบับเล็ก เลยใส่ overlay ช่วยกลบความนุ่ม) */
+	.icon .pic {
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center 40%;
+		filter: saturate(1.05) brightness(0.9);
+		transition: transform 0.4s;
+	}
+	.icon:hover .pic { transform: scale(1.05); }
+	.guide:hover { transform: translateY(-3px); border-color: var(--chartreuse); }
+	.text, .arrow { position: relative; z-index: 1; }
+	h3 { font-size: 1.6rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.3rem; }
+	p { margin: 0; font-size: 0.88rem; color: #c3c8c3; }
+	.arrow { font-size: 1.3rem; color: var(--chartreuse); }
+	@media (prefers-reduced-motion: reduce) {
+		.guide, .hero .pic, .icon .pic { transition: none; }
+		.guide:hover, .hero:hover .pic, .icon:hover .pic { transform: none; }
+	}
+</style>

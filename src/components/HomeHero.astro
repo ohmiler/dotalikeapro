@@ -1,0 +1,86 @@
+---
+---
+
+<section class="home-hero">
+	<div class="art">
+		<img src="/images/hero.webp" alt="" width="2000" height="1125" fetchpriority="high" decoding="async" />
+	</div>
+	<div class="wrap inner">
+		<p class="label">Improve with purpose</p>
+		<h1>Your next rank<br />starts here.</h1>
+		<p class="lead">พื้นฐานระดับ Immortal ครบทุกตำแหน่ง เข้าใจ “ทำไม” ไม่ใช่แค่ “ทำอะไร” เพื่อให้คุณได้เปรียบตั้งแต่ก่อนไฟต์แรก</p>
+		<a class="btn primary" href="/fundamentals/last-hit-deny/">Start learning <span aria-hidden="true">→</span></a>
+		<ul class="pillars">
+			<li>
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h7a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4zM20 5h-7a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h7z"></path></svg>
+				Guides
+			</li>
+			<li>
+				<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"></circle><circle cx="17" cy="9" r="2.5"></circle><path d="M3 19c0-3 3-5 6-5s6 2 6 5M15 15c3 0 6 1.5 6 4"></path></svg>
+				5 Positions
+			</li>
+			<li>
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"></path></svg>
+				Patch-aware
+			</li>
+		</ul>
+	</div>
+</section>
+
+<style>
+	.home-hero {
+		position: relative;
+		overflow: hidden;
+		margin-block: 0;
+		min-height: clamp(34rem, 88vh, 46rem);
+		display: flex;
+		align-items: center;
+		border-bottom: 1px solid var(--line);
+		background:
+			radial-gradient(700px 420px at 78% 40%, rgba(200, 245, 96, 0.14), transparent 65%),
+			linear-gradient(120deg, #0b0f10 35%, #16211a 100%);
+	}
+	.art {
+		position: absolute;
+		inset: 0;
+		mask-image: linear-gradient(90deg, transparent 15%, #000 60%);
+	}
+	.art img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: 72% center;
+		filter: saturate(0.85) brightness(0.92);
+	}
+	.art::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(180deg, rgba(16, 20, 22, 0.6), transparent 28%, rgba(16, 20, 22, 0.75));
+	}
+	.inner { position: relative; padding-block: 8rem 4rem; }
+	h1 {
+		font-size: clamp(3.4rem, 9vw, 6.4rem);
+		font-weight: 800;
+		letter-spacing: -0.005em;
+		margin: 0.4rem 0 1.2rem;
+	}
+	.lead { max-width: 40ch; color: #c3c8c3; margin: 0 0 1.8rem; }
+	.pillars {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.8rem;
+		list-style: none;
+		padding: 0;
+		margin: 2.4rem 0 0;
+		font-size: 0.72rem;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--slate);
+	}
+	.pillars li { display: flex; align-items: center; gap: 0.5rem; }
+	.pillars svg { width: 1.2rem; height: 1.2rem; fill: none; stroke: var(--slate); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+	@media (max-width: 40rem) {
+		.art { inset: 0; opacity: 0.5; mask-image: none; }
+	}
+</style>

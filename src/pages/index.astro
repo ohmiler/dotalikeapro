@@ -1,0 +1,18 @@
+---
+import Home from '../layouts/Home.astro';
+import HomeHero from '../components/HomeHero.astro';
+import GuideCards from '../components/GuideCards.astro';
+import WeeklyProgress from '../components/WeeklyProgress.astro';
+import RankProgress from '../components/RankProgress.astro';
+---
+
+<Home title="dotalikeapro — Play smarter. Climb higher." description="เรียนพื้นฐาน Dota 2 แบบ Immortal ครบทุกตำแหน่ง">
+	<HomeHero />
+	<div class="wrap">
+		<GuideCards />
+		<div id="progress">
+			<WeeklyProgress />
+			<RankProgress />
+		</div>
+	</div>
+</Home>

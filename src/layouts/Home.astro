@@ -1,0 +1,57 @@
+---
+import '../styles/home.css';
+
+interface Props {
+	title: string;
+	description: string;
+	/** true = เมนูทึบตั้งแต่ต้น (หน้าบทเรียน), false = โปร่งใสทับภาพ hero (หน้าแรก) */
+	solid?: boolean;
+}
+const { title, description, solid = false } = Astro.props;
+
+// นับบทที่อ่านต่อวัน ใช้แสดงใน Weekly progress (เก็บในเบราว์เซอร์เท่านั้น)
+const tracker = `(function(){try{var p=location.pathname;if(p==='/')return;var d=new Date(),k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'),v=JSON.parse(localStorage.getItem('dlp-visits')||'{}');v[k]=v[k]||[];if(v[k].indexOf(p)<0){v[k].push(p);localStorage.setItem('dlp-visits',JSON.stringify(v))}}catch(e){}})();`;
+---
+
+<!doctype html>
+<html lang="th">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		<meta name="theme-color" content="#101416" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+	</head>
+	<body data-solid-header={solid ? '' : undefined}>
+		<header class:list={['site-header', { scrolled: solid }]}>
+			<div class="wrap">
+				<a class="brand" href="/"><img class="mark" src="/logo-mark.svg" alt="" width="22" height="24" />dotalikeapro</a>
+				<nav class="nav" aria-label="หลัก">
+					<a href="/fundamentals/last-hit-deny/">Guides</a>
+					<a href="/#positions">Positions</a>
+					<a href="/#progress">Progress</a>
+				</nav>
+				<a class="btn sm" href="/fundamentals/last-hit-deny/">Start learning</a>
+			</div>
+		</header>
+		<main>
+			<slot />
+		</main>
+		<footer class="foot">
+			<div class="wrap">
+				<span>Tactical</span><span>Focused</span><span>Competitive</span>
+				<span>ไม่ใช่เว็บทางการของ Valve</span>
+			</div>
+		</footer>
+		<script is:inline set:html={tracker}></script>
+		<script>
+			const header = document.querySelector('.site-header');
+			if (header && !document.body.hasAttribute('data-solid-header')) {
+				const sync = () => header.classList.toggle('scrolled', window.scrollY > 8);
+				sync();
+				addEventListener('scroll', sync, { passive: true });
+			}
+		</script>
+	</body>
+</html>
