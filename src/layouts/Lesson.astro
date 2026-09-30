@@ -11,7 +11,10 @@ interface Props {
 	headings: { depth: number; slug: string; text: string }[];
 }
 const { entry, headings } = Astro.props;
-const { title, description, evergreen, patch } = entry.data;
+const { title, description, evergreen, patch, lastReviewed } = entry.data;
+const reviewedText = lastReviewed
+	? lastReviewed.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
+	: null;
 
 const section = sections.find((s) => entry.id.startsWith(`${s.dir}/`));
 const flat = (await getNav()).flatMap((s) => s.items);
@@ -53,6 +56,12 @@ const outdated = !evergreen && comparePatch(patch ?? '', MECHANICS_PATCH) < 0;
 			<div class="prose">
 				<slot />
 			</div>
+
+			<p class="review-note">
+				เนื้อหาเชิงกลยุทธ์เป็นแนวทางทั่วไป ไม่ใช่ข้อมูลทางการของเกม ส่วนตัวเลขที่ขึ้นกับ patch ตรวจกับแพตช์โน้ตของ Valve{
+					reviewedText && ` (ตรวจล่าสุด ${reviewedText})`
+				}
+			</p>
 
 			<nav class="pager" aria-label="บทก่อนหน้า/ถัดไป">
 				{

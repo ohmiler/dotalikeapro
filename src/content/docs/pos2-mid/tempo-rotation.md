@@ -51,7 +51,7 @@ Rotate คือออกจากเลนเพื่อไปช่วยท�
 
 ## เชื่อมกับ Rune และ Timings
 
-ตัวเลือก rotate หลายอย่างเกิดจากเวลาเกิดของ rune Wisdom Shrine หรือ Tormentor (ดูบท [Timings](/fundamentals/timings/)) ผู้เล่นระดับสูงวางแผน rotate ล่วงหน้าตามตารางเหล่านี้ ไม่ใช่ตอนเห็นแล้วค่อยไป
+ตัวเลือก rotate หลายอย่างเกิดจากเวลาเกิดของ rune Wisdom Shrine หรือ Tormentor (ดูบท [Timings](/fundamentals/timings/)) แนะนำให้วางแผน rotate ล่วงหน้าตามตารางเหล่านี้ ไม่ใช่รอเห็นแล้วค่อยไป
 
 ## TL;DR
 
