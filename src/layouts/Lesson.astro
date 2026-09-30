@@ -3,7 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import Base from './Home.astro';
 import SideNav from '../components/SideNav.astro';
 import { getNav, sections } from '../nav';
-import { CURRENT_PATCH } from '../patch';
+import { MECHANICS_PATCH, comparePatch } from '../patch';
 import '../styles/prose.css';
 
 interface Props {
@@ -19,7 +19,8 @@ const i = flat.findIndex((e) => e.id === entry.id);
 const prev = flat[i - 1];
 const next = flat[i + 1];
 const toc = headings.filter((h) => h.depth === 2);
-const outdated = !evergreen && patch !== CURRENT_PATCH;
+// ล้าสมัยเมื่อเขียนตาม patch ที่เก่ากว่า patch ล่าสุดที่เปลี่ยนกฎเกม (patch ที่แก้แค่ฮีโร่/ไอเท็มไม่นับ)
+const outdated = !evergreen && comparePatch(patch ?? '', MECHANICS_PATCH) < 0;
 ---
 
 <Base title={`${title} | dotalikeapro`} description={description ?? title} solid>
@@ -41,7 +42,7 @@ const outdated = !evergreen && patch !== CURRENT_PATCH;
 					!evergreen && (
 						<p class:list={['patch-badge', { outdated }]}>
 							{outdated
-								? `เนื้อหานี้เขียนตาม patch ${patch ?? 'ไม่ระบุ'} — อาจล้าสมัย (ปัจจุบัน ${CURRENT_PATCH})`
+								? `เนื้อหานี้เขียนตาม patch ${patch ?? 'ไม่ระบุ'} — อาจล้าสมัย (กฎเกมเปลี่ยนใน ${MECHANICS_PATCH})`
 								: `อัปเดตตาม patch ${patch}`}
 						</p>
 					)

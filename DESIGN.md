@@ -78,3 +78,14 @@ Hero + CTA, Popular guides (การ์ดรูป), Weekly progress, Rank pro
 - **ตัวเลขที่ขึ้นกับ patch** ต้องยืนยันจากแพตช์โน้ตทางการเท่านั้น (ดึงได้จาก `https://www.dota2.com/datafeed/patchnotes?version=<เลขเวอร์ชัน>&language=english`) ถ้ายืนยันไม่ได้ให้ระบุ "ควรเช็กในเกม" ห้ามเดา
 - ตัวเลขเชิงกลยุทธ์ (เช่น last hit เป้าหมาย) ต้องบอกว่าเป็นค่าประมาณ
 - ลิงก์ภายในใช้รูปแบบ `/หมวด/บท/` แล้วตรวจลิงก์เสียหลังเพิ่มบท
+
+## ตรวจ patch อัตโนมัติ
+- `scripts/check-patch.mjs` ดึงแพตช์โน้ตทางการจาก `dota2.com/datafeed` (ไม่มีเอกสารประกอบ Valve อาจเปลี่ยนรูปแบบ — ถ้าเปลี่ยน Action จะล้มและอีเมลแจ้ง)
+- `.github/workflows/patch-check.yml` รันทุก 6 ชั่วโมง (และกดรันเองได้ที่แท็บ Actions)
+- `src/patch.ts` มีสองค่า อัปเดตอัตโนมัติ **ห้ามแก้มือ**:
+  - `LATEST_PATCH` patch ล่าสุดที่ออก
+  - `MECHANICS_PATCH` patch ล่าสุดที่เปลี่ยนกฎเกมที่เกี่ยวกับบทเรียน (ตัดสินจากคำใน `KEYWORDS` ของสคริปต์)
+- บทที่ `evergreen: false` ขึ้นป้าย "อาจล้าสมัย" เมื่อ `patch` ใน frontmatter เก่ากว่า `MECHANICS_PATCH` ตรวจบทแล้วให้แก้ `patch` เป็นค่าใหม่
+- เมื่อมี patch ที่กระทบ ระบบเปิด Issue ใน GitHub พร้อมรายงาน
+- เพิ่มบทที่พูดถึงเรื่องใหม่ (เช่น outpost, courier) ให้เพิ่มคำที่เกี่ยวใน `KEYWORDS`
+- ทดสอบ: `node scripts/check-patch.mjs --dry --from=7.41b --mech-from=7.41b`
