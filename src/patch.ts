@@ -5,8 +5,8 @@
 //
 // บทเรียนที่ evergreen: false จะขึ้นป้าย "อาจล้าสมัย" เมื่อ frontmatter `patch` เก่ากว่า MECHANICS_PATCH
 // พอตรวจบทแล้ว ให้แก้ `patch` ในบทนั้นเป็นค่า MECHANICS_PATCH ป้ายจะหาย
-export const LATEST_PATCH = '7.41f';
-export const MECHANICS_PATCH = '7.41e';
+export const LATEST_PATCH = '7.42';
+export const MECHANICS_PATCH = '7.42';
 
 /** เทียบเลข patch เช่น 7.41 < 7.41a < 7.41b < 7.42 (คืนค่าลบ/0/บวก) */
 export function comparePatch(a: string, b: string): number {
